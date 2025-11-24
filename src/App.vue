@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 
 let id = 0
+let isDarkTheme = ref(false)
 
 const newTodo = ref('')
 const todos = ref([])
@@ -16,17 +17,21 @@ const addTodo = () => {
 	newTodo.value = ''
 }
 const removeTodo = todo => {
-	todos.value = todos.value.filter(t => t != todo)
+	todos.value = todos.value.filter(t => t.id != todo.id)
 }
 const filteredTodos = computed(() => {
 	return hideCompleted.value ? todos.value.filter(t => !t.done) : todos.value
 })
+
+const amountTodos = computed(() => {
+	return todos.value.length
+})
 </script>
 
 <template>
-	<div class="container">
+	<div class="container" :class="{ 'is-dark': isDarkTheme }">
 		<h1 class="title">TODO APP</h1>
-		<p class="subtitle">Количество задач: {{}}</p>
+		<p class="subtitle">Количество задач: {{ amountTodos }}</p>
 		<div class="body">
 			<form @submit.prevent="addTodo">
 				<input v-model="newTodo" required />
@@ -39,14 +44,25 @@ const filteredTodos = computed(() => {
 					<button class="btn__delete" @click="removeTodo(todo)">X</button>
 				</li>
 			</ul>
-			<button @click="hideCompleted = !hideCompleted">
+			<button class="btn-show" @click="hideCompleted = !hideCompleted">
 				{{ hideCompleted ? 'Показать все' : 'Скрыть выполненные' }}
 			</button>
 		</div>
+		<button class="btn-change" @click="isDarkTheme = !isDarkTheme">
+			Change theme
+		</button>
 	</div>
 </template>
 
 <style scoped>
+.btn-change {
+	margin-top: 25px;
+}
+
+.is-dark {
+	background-color: black;
+	color: white;
+}
 .done {
 	text-decoration: line-through;
 }
